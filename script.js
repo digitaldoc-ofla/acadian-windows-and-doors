@@ -426,6 +426,215 @@ function swatchSVG(key) {
   </svg>`;
 }
 
+/* =========================================================
+   Specialty windows: round, oval, octagon, quatrefoil,
+   gothic, eyebrow, demilune. Each shape is defined as an
+   outline at a given inset so the casing, frame and glass
+   all follow the same curve.
+   ========================================================= */
+const SHAPES = {
+  circle:     { name: "Oculus",          note: "The classic round window" },
+  oval:       { name: "Œil-de-Bœuf",     note: "French Creole oval" },
+  octagon:    { name: "Octagon",         note: "Crisp, geometric accent" },
+  quatrefoil: { name: "Quatrefoil",      note: "Four-lobed Gothic Revival" },
+  gothic:     { name: "Gothic Lancet",   note: "Pointed-arch elegance" },
+  eyebrow:    { name: "Eyebrow",         note: "A gentle, sweeping curve" },
+  demilune:   { name: "Demilune",        note: "Half-round sunburst" },
+};
+const PATTERNS = {
+  wheel: "Wagon Wheel",
+  rose: "Rose",
+  cross: "Bullseye Cross",
+  sunburst: "Sunburst",
+  grid: "Divided Grid",
+  leaded: "Leaded Diamond",
+};
+const GLASS = {
+  clear: { name: "Clear Glass", sw: "#5f7a84" },
+  amber: { name: "Cathedral Amber", sw: "#c98b3a" },
+  green: { name: "Antique Bayou Green", sw: "#7f9a7c" },
+};
+
+// Flat-bottomed shapes sit on a sill; the rest are "floating" with four keystones.
+const FLAT = { gothic: 385, eyebrow: 290, demilune: 300 };
+const VIEWBOX = {
+  circle: "0 0 400 400", octagon: "0 0 400 400", quatrefoil: "0 0 400 400",
+  oval: "0 50 400 300", gothic: "0 0 400 420", eyebrow: "0 50 400 290", demilune: "0 70 400 270",
+};
+
+function shapeGeom(shape, i) {
+  const cx = 200;
+  if (shape === "circle") {
+    const r = 150 - i, cy = 200;
+    return { d: `M${cx - r},${cy} A${r},${r} 0 1 1 ${cx + r},${cy} A${r},${r} 0 1 1 ${cx - r},${cy} Z`, cx, cy, R: r, ext: [r, r], full: true };
+  }
+  if (shape === "oval") {
+    const rx = 165 - i, ry = 112 - i, cy = 200;
+    return { d: `M${cx - rx},${cy} A${rx},${ry} 0 1 1 ${cx + rx},${cy} A${rx},${ry} 0 1 1 ${cx - rx},${cy} Z`, cx, cy, R: rx, ext: [rx, ry], full: true };
+  }
+  if (shape === "octagon") {
+    const a = 146 - i, rv = a / Math.cos(Math.PI / 8), cy = 200;
+    const pts = [];
+    for (let k = 0; k < 8; k++) {
+      const t = Math.PI / 8 + (k * Math.PI) / 4;
+      pts.push(`${(cx + rv * Math.cos(t)).toFixed(2)},${(cy + rv * Math.sin(t)).toFixed(2)}`);
+    }
+    return { d: `M${pts.join(" L")} Z`, cx, cy, R: rv, ext: [a, a], full: true };
+  }
+  if (shape === "quatrefoil") {
+    const dd = 68, r = 86 - i, cy = 200;
+    const h = Math.sqrt(r * r - (dd * dd) / 2);
+    const pr = dd / Math.SQRT2 + h;
+    const P = (deg) => {
+      const t = (deg * Math.PI) / 180;
+      return `${(cx + pr * Math.cos(t)).toFixed(2)},${(cy + pr * Math.sin(t)).toFixed(2)}`;
+    };
+    let d = `M${P(-45)}`;
+    [45, 135, 225, 315].forEach((deg) => (d += ` A${r},${r} 0 0 1 ${P(deg)}`));
+    return { d: d + " Z", cx, cy, R: dd + r, ext: [dd + r, dd + r], full: true };
+  }
+  if (shape === "gothic") {
+    const S = 235, B = FLAT.gothic, l = 90 + i, r = 310 - i, rad = 220 - i;
+    const top = S - Math.sqrt(rad * rad - 110 * 110);
+    return { d: `M${l},${B} L${l},${S} A${rad},${rad} 0 0 1 ${cx},${top} A${rad},${rad} 0 0 1 ${r},${S} L${r},${B} Z`, cx, cy: S, R: 200, top, l, r };
+  }
+  if (shape === "eyebrow") {
+    const B = FLAT.eyebrow, l = 30 + i, r = 370 - i, sy = 190 + i * 0.5, cy = 30 + i * 1.7;
+    return { d: `M${l},${B} L${l},${sy} Q${cx},${cy} ${r},${sy} L${r},${B} Z`, cx, cy: B, R: 260, top: (sy + cy) / 2, l, r };
+  }
+  // demilune
+  const B = FLAT.demilune, R = 172 - i;
+  return { d: `M${cx - R},${B} A${R},${R} 0 0 1 ${cx + R},${B} Z`, cx, cy: B, R, top: B - R, l: cx - R, r: cx + R, half: true };
+}
+
+function keystone(id, w, cx, cy, ext, angle) {
+  return `<g transform="translate(${cx} ${cy}) rotate(${angle}) translate(0 ${-ext - 6})">
+    <path d="M-15,-4 L15,-4 L10,36 L-10,36 Z" fill="${w.light}" stroke="${w.dark}" stroke-width="1.5"/>
+    <path d="M-15,-4 L15,-4 L10,36 L-10,36 Z" fill="url(#${id}-grain)"/>
+  </g>`;
+}
+
+function muntins(w, g, pattern, shape) {
+  const { cx, cy } = g;
+  const bar = (x1, y1, x2, y2, sw = 6) =>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${w.base}" stroke-width="${sw}" stroke-linecap="round"/>` +
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${w.light}" stroke-width="${sw / 3}" opacity=".5"/>`;
+  const ring = (rr, sw = 6) =>
+    `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="none" stroke="${w.base}" stroke-width="${sw}"/>` +
+    `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="none" stroke="${w.light}" stroke-width="${sw / 3}" opacity=".5"/>`;
+  const hub = (rr) =>
+    `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="url(#${g.id}-wood)" stroke="${w.dark}" stroke-width="1.5"/>` +
+    `<circle cx="${cx}" cy="${cy}" r="${rr * 0.45}" fill="none" stroke="${w.dark}" stroke-opacity=".5"/>`;
+  const half = !g.full; // radiate upward only from a bottom center
+  const R = g.R + 40;
+  const rays = (n, sw) => {
+    let s = "";
+    const start = half ? 0 : 0, span = half ? 180 : 360, count = half ? n + 1 : n;
+    for (let k = 0; k < count; k++) {
+      if (half && (k === 0 || k === n)) continue;
+      const t = ((start + (span * k) / n) * Math.PI) / 180;
+      s += bar(cx, cy, cx + Math.cos(t) * R, cy - Math.sin(t) * R, sw);
+    }
+    return s;
+  };
+  const base = half ? Math.min(g.R, 175) : Math.min(...(g.ext || [g.R]));
+  // Gothic lancets get a transom at the springline and a center mullion below it
+  if (shape === "gothic" && pattern !== "grid" && pattern !== "leaded") {
+    return muntins(w, g, pattern, "gothic-head") + bar(0, cy, 400, cy, 7) + bar(cx, cy, cx, 420, 7);
+  }
+  switch (pattern) {
+    case "wheel":
+      return rays(half ? 6 : 8, 6) + ring(base * 0.55) + hub(base * 0.17);
+    case "rose": {
+      let s = rays(half ? 8 : 12, 4) + ring(base * 0.36, 5) + ring(base * 0.7, 5);
+      const n = half ? 8 : 12;
+      for (let k = 0; k < n; k++) {
+        const t = ((half ? (180 * (k + 0.5)) / n : (360 * (k + 0.5)) / n) * Math.PI) / 180;
+        const px = cx + Math.cos(t) * base * 0.53, py = cy - Math.sin(t) * base * 0.53;
+        s += `<circle cx="${px}" cy="${py}" r="${base * 0.09}" fill="none" stroke="${w.base}" stroke-width="4"/>`;
+      }
+      return s + hub(base * 0.14);
+    }
+    case "cross":
+      return (half ? bar(cx, cy, cx, 0) : bar(cx, 0, cx, 400) + bar(0, cy, 400, cy)) +
+        (shape === "gothic-head"
+          ? `<path d="M${cx - base * 0.5},${cy} A${base * 0.5},${base * 0.5} 0 0 1 ${cx + base * 0.5},${cy}" fill="none" stroke="${w.base}" stroke-width="6"/>`
+          : ring(base * 0.5));
+    case "sunburst":
+      return rays(half ? 12 : 24, 3) + hub(base * (half ? 0.2 : 0.12));
+    case "grid": {
+      let s = "";
+      for (let x = cx - 280; x <= cx + 280; x += 56) s += bar(x, 0, x, 420, 5);
+      for (let y = cy - 280; y <= cy + 280; y += 56) s += bar(0, y, 400, y, 5);
+      return s;
+    }
+    case "leaded":
+      return `<rect x="0" y="0" width="400" height="420" fill="url(#${g.id}-lead)"/>`;
+  }
+  return "";
+}
+
+function specialSVG(opts) {
+  const o = Object.assign({ shape: "circle", pattern: "wheel", glass: "clear", wood: "sinker-cypress" }, opts);
+  const w = WOODS[o.wood];
+  const id = "x" + ++uid;
+  const casing = shapeGeom(o.shape, -26);
+  const glassG = Object.assign(shapeGeom(o.shape, 14), { id });
+  const flatB = FLAT[o.shape];
+
+  const glassFill = {
+    clear: `<linearGradient id="${id}-gl" x1="0" x2=".5" y1="0" y2="1"><stop offset="0" stop-color="#26343b"/><stop offset=".55" stop-color="#4c636c"/><stop offset="1" stop-color="#839aa0"/></linearGradient>`,
+    amber: `<radialGradient id="${id}-gl" cx=".5" cy=".45" r=".65"><stop offset="0" stop-color="#ffd98a"/><stop offset=".45" stop-color="#d9973f"/><stop offset="1" stop-color="#7a4318"/></radialGradient>`,
+    green: `<radialGradient id="${id}-gl" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#c9d9b8"/><stop offset=".5" stop-color="#7f9a7c"/><stop offset="1" stop-color="#3d5444"/></radialGradient>`,
+  }[o.glass];
+
+  let s = `<svg viewBox="${VIEWBOX[o.shape]}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${SHAPES[o.shape].name} window in ${w.name}">`;
+  s += defs(id, w).replace("</defs>", `${glassFill}</defs>`);
+  s += `<clipPath id="${id}-clip"><path d="${glassG.d}"/></clipPath>`;
+
+  // casing, molding and frame
+  s += `<path d="${casing.d}" fill="url(#${id}-casing)"/>`;
+  s += `<path d="${casing.d}" fill="url(#${id}-grain)" opacity=".7"/>`;
+  s += `<path d="${shapeGeom(o.shape, -17).d}" fill="none" stroke="${w.light}" stroke-opacity=".4" stroke-width="1.5"/>`;
+  s += `<path d="${shapeGeom(o.shape, -8).d}" fill="none" stroke="${w.dark}" stroke-opacity=".6" stroke-width="2"/>`;
+  s += `<path d="${shapeGeom(o.shape, 0).d}" fill="${w.dark}"/>`;
+  s += `<path d="${shapeGeom(o.shape, 2).d}" fill="url(#${id}-wood)"/>`;
+  s += `<path d="${shapeGeom(o.shape, 2).d}" fill="url(#${id}-grain)"/>`;
+  s += `<path d="${shapeGeom(o.shape, 12).d}" fill="none" stroke="${w.dark}" stroke-opacity=".45" stroke-width="3"/>`;
+
+  // glass + muntins
+  s += `<path d="${glassG.d}" fill="url(#${id}-gl)"/>`;
+  s += `<g clip-path="url(#${id}-clip)">`;
+  s += `<polygon points="60,420 250,0 320,0 130,420" fill="#fff" opacity="${o.glass === "clear" ? 0.08 : 0.12}"/>`;
+  s += muntins(w, glassG, o.pattern, o.shape);
+  s += `</g>`;
+  s += `<path d="${glassG.d}" fill="none" stroke="${w.dark}" stroke-width="2.5"/>`;
+
+  // keystones
+  if (glassG.full) {
+    const [ex, ey] = casing.ext;
+    s += keystone(id, w, casing.cx, casing.cy, ey, 0);
+    s += keystone(id, w, casing.cx, casing.cy, ey, 180);
+    s += keystone(id, w, casing.cx, casing.cy, ex, 90);
+    s += keystone(id, w, casing.cx, casing.cy, ex, 270);
+  } else {
+    s += keystone(id, w, 200, 0, -casing.top, 0);
+  }
+
+  // bottom rail + sill for flat-bottomed shapes
+  if (flatB) {
+    s += woodRect(id, glassG.l - 12, flatB - 14, glassG.r - glassG.l + 24, 14);
+    s += `<rect x="${glassG.l - 12}" y="${flatB - 14}" width="${glassG.r - glassG.l + 24}" height="2" fill="${w.dark}" opacity=".5"/>`;
+    const sl = casing.l - 14, sw = casing.r - casing.l + 28;
+    s += woodRect(id, sl, flatB, sw, 14);
+    s += `<rect x="${sl}" y="${flatB}" width="${sw}" height="3" fill="${w.light}" opacity=".5"/>`;
+    s += `<rect x="${sl}" y="${flatB + 14}" width="${sw}" height="3" fill="${w.dark}"/>`;
+    s += woodRect(id, casing.l + 10, flatB + 17, casing.r - casing.l - 20, 18);
+  }
+  s += `</svg>`;
+  return s;
+}
+
 /* ---------- Render static art from data attributes ---------- */
 document.querySelectorAll("[data-door]").forEach((el) => {
   el.innerHTML = doorSVG(JSON.parse(el.dataset.door));
@@ -433,6 +642,60 @@ document.querySelectorAll("[data-door]").forEach((el) => {
 document.querySelectorAll("[data-window]").forEach((el) => {
   el.innerHTML = windowSVG(JSON.parse(el.dataset.window));
 });
+document.querySelectorAll("[data-special]").forEach((el) => {
+  el.innerHTML = specialSVG(JSON.parse(el.dataset.special));
+});
+
+/* ---------- Statement window designer ---------- */
+const wstate = { shape: "circle", pattern: "wheel", glass: "clear", wood: "sinker-cypress" };
+const wOptions = {
+  shape: Object.fromEntries(Object.entries(SHAPES).map(([k, v]) => [k, v.name])),
+  pattern: PATTERNS,
+  glass: Object.fromEntries(Object.entries(GLASS).map(([k, v]) => [k, v.name])),
+  wood: Object.fromEntries(Object.entries(WOODS).map(([k, v]) => [k, v.name])),
+};
+document.querySelectorAll(".chips[data-woption]").forEach((group) => {
+  const key = group.dataset.woption;
+  group.innerHTML = Object.entries(wOptions[key])
+    .map(([k, label]) => {
+      const sw = key === "wood" ? WOODS[k].base : key === "glass" ? GLASS[k].sw : null;
+      return `<button data-value="${k}">${sw ? `<i style="--sw:${sw}"></i>` : ""}${label}</button>`;
+    })
+    .join("");
+  group.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    wstate[key] = b.dataset.value;
+    renderWindow();
+  });
+});
+
+function renderWindow() {
+  const stage = document.getElementById("config-window");
+  if (!stage) return;
+  stage.innerHTML = specialSVG(wstate);
+  document.querySelectorAll(".chips[data-woption]").forEach((group) => {
+    group.querySelectorAll("button").forEach((b) => {
+      const on = b.dataset.value === wstate[group.dataset.woption];
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-pressed", on);
+    });
+  });
+  document.getElementById("window-summary").textContent =
+    `${SHAPES[wstate.shape].name} · ${PATTERNS[wstate.pattern]} · ${GLASS[wstate.glass].name} · ${WOODS[wstate.wood].name}`;
+}
+renderWindow();
+
+const windowCta = document.getElementById("window-cta");
+if (windowCta) {
+  windowCta.addEventListener("click", () => {
+    document.querySelector('select[name="project"]').value = "Specialty / round windows";
+    document.getElementById("form-wood").value = WOODS[wstate.wood].name;
+    document.getElementById("form-message").value =
+      `I'd like a quote on a statement window: ${SHAPES[wstate.shape].name} shape, ${PATTERNS[wstate.pattern]} pattern, ` +
+      `${GLASS[wstate.glass].name}, in ${WOODS[wstate.wood].name}.`;
+  });
+}
 
 /* ---------- Configurator ---------- */
 const state = { wood: "sinker-cypress", top: "arch", layout: "double", glass: "divided", hardware: "brass", lite: "upper" };
@@ -541,7 +804,7 @@ document.querySelector("#concept-badge button").addEventListener("click", () => 
 
 /* ---------- Reveal on scroll ---------- */
 const revealEls = document.querySelectorAll(
-  ".section-head, .collection-card, .wood-card, .process-grid li, .feature-copy, .feature-art, .statement-text, .value"
+  ".section-head, .collection-card, .special-card, .wood-card, .process-grid li, .feature-copy, .feature-art, .statement-text, .value"
 );
 if ("IntersectionObserver" in window) {
   revealEls.forEach((el) => el.classList.add("reveal"));

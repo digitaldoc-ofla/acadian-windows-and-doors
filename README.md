@@ -12,6 +12,9 @@ Open `index.html` in any browser. No build step and no server needed.
 - **Hero:** an elegant arched sinker-cypress entry and the brand promise.
 - **Values:** Truly Custom, Rare Woods, Built to Last, Highest Quality.
 - **Collections:** Grand Entry Doors, Arched & Fanlight Windows, French & Gallery Doors, Casement & Transom Windows.
+- **Specialty Windows:** a showcase of round, oval, gothic and sunburst windows.
+- **The Statement Collection:** eight signature shapes: oculus, œil-de-bœuf, rose, quatrefoil, gothic lancet, octagon, demilune and eyebrow.
+- **Design a Statement Window:** a live designer for shape, muntin pattern, glass (clear, cathedral amber, antique bayou green) and wood.
 - **Sinker Cypress feature:** the story of the wood and why Louisiana loves it.
 - **Our Woods:** six species. Click one to preview it on the door.
 - **Design Your Door:** a live configurator for wood, top shape, single or double, glass style and hardware finish. "Request a Quote" carries the design into the contact form.
@@ -20,6 +23,11 @@ Open `index.html` in any browser. No build step and no server needed.
 
 All door and window artwork is drawn in code (`script.js`), so every illustration
 updates to any wood, shape or hardware combination.
+
+## Screenshots for review
+
+`concept-screens/` has a page-by-page PNG of every section, plus
+`Acadian-Website-Concept.pdf`, which bundles them with captions for sharing.
 
 ## Placeholders to replace before launch
 

@@ -34,6 +34,7 @@
 
       <nav class="main-nav" aria-label="Primary">
         <a href="#collections">Collections</a>
+        <a href="#specialty">Specialty Windows</a>
         <a href="#woods">Our Woods</a>
         <a href="#design">Design Your Door</a>
         <a href="#process">Process</a>
@@ -143,6 +144,121 @@
               <a href="#contact" class="link-arrow">Start a design</a>
             </div>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SPECIALTY WINDOWS: SHOWCASE ============ -->
+    <section class="section specialty" id="specialty">
+      <div class="container specialty-grid">
+        <div class="specialty-copy">
+          <p class="eyebrow">Specialty Windows</p>
+          <h2>Circles, ovals &amp; <em>shapes no catalog carries.</em></h2>
+          <p>Round oculus windows, French Creole œil-de-bœuf ovals, Gothic lancets and sunburst demilunes. These are the windows people slow down on the street to admire, and the ones most shops won't touch.</p>
+          <p>Every curve is laid out full size and built up from glued segments or bent laminations, then hand-shaped so the joints disappear and the frame stays true for generations.</p>
+          <ul class="specialty-points">
+            <li><span>Any shape</span>Round, oval, octagonal, pointed, lobed or one you sketch</li>
+            <li><span>Any glass</span>True divided lites, leaded, cathedral amber or antique green</li>
+            <li><span>Fixed or operable</span>Stationary, pivoting or hinged to open</li>
+            <li><span>Perfectly matched</span>Milled from the same wood as your doors</li>
+          </ul>
+          <a href="#window-design" class="btn">Design a Statement Window</a>
+        </div>
+        <div class="specialty-art">
+          <div class="specialty-wall">
+            <div class="specialty-window" data-special='{"shape":"circle","pattern":"rose","glass":"amber","wood":"sinker-cypress"}'></div>
+          </div>
+          <p class="hero-caption">Shown: Rose oculus in sinker cypress with cathedral amber glass</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SPECIALTY WINDOWS: GALLERY ============ -->
+    <section class="section specialty-gallery" id="specialty-gallery">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">The Statement Collection</p>
+          <h2>Windows that <em>become the landmark</em></h2>
+          <p>Eight of our favorite shapes to start the conversation. Each can be made in any size, any wood, and any pattern of muntins and glass.</p>
+        </div>
+        <div class="special-grid">
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"circle","pattern":"wheel","glass":"clear","wood":"sinker-cypress"}'></div>
+            <h3>Wagon Wheel Oculus</h3>
+            <p>Eight spokes and a turned hub. The quintessential gable window.</p>
+          </article>
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"oval","pattern":"cross","glass":"clear","wood":"mahogany"}'></div>
+            <h3>Œil-de-Bœuf</h3>
+            <p>The "bull's-eye" oval of French Creole architecture, with a classic cross and ring.</p>
+          </article>
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"circle","pattern":"rose","glass":"amber","wood":"walnut"}'></div>
+            <h3>Rose Window</h3>
+            <p>Concentric rings and rosettes glowing with cathedral amber glass.</p>
+          </article>
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"quatrefoil","pattern":"leaded","glass":"green","wood":"white-oak"}'></div>
+            <h3>Quatrefoil</h3>
+            <p>A four-lobed Gothic Revival accent in leaded antique green glass.</p>
+          </article>
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"gothic","pattern":"wheel","glass":"clear","wood":"heart-pine"}'></div>
+            <h3>Gothic Lancet</h3>
+            <p>A pointed-arch window with radiating tracery, made for chapels and stair halls.</p>
+          </article>
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"octagon","pattern":"grid","glass":"clear","wood":"spanish-cedar"}'></div>
+            <h3>Octagon</h3>
+            <p>Crisp and geometric. Beautiful in a stairwell, bath or dormer.</p>
+          </article>
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"demilune","pattern":"sunburst","glass":"amber","wood":"sinker-cypress"}'></div>
+            <h3>Sunburst Demilune</h3>
+            <p>A half-round fanlight to crown an entry, a window, or an interior arch.</p>
+          </article>
+          <article class="special-card">
+            <div class="special-art" data-special='{"shape":"eyebrow","pattern":"grid","glass":"clear","wood":"mahogany"}'></div>
+            <h3>Eyebrow</h3>
+            <p>A long, gentle curve that softens a roofline or tops a run of windows.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SPECIALTY WINDOWS: DESIGNER ============ -->
+    <section class="section design window-design" id="window-design">
+      <div class="container design-grid">
+        <div class="design-preview">
+          <div class="design-stage window-stage">
+            <div id="config-window"></div>
+          </div>
+          <p class="design-summary" id="window-summary"></p>
+        </div>
+
+        <div class="design-controls">
+          <p class="eyebrow">Design a Statement Window</p>
+          <h2>Your shape, <em>your story.</em></h2>
+          <p class="design-intro">Mix a shape, a muntin pattern, the glass and the wood. Your real window will be drawn to your exact opening.</p>
+
+          <fieldset class="control">
+            <legend>Shape</legend>
+            <div class="chips" data-woption="shape"></div>
+          </fieldset>
+          <fieldset class="control">
+            <legend>Pattern</legend>
+            <div class="chips" data-woption="pattern"></div>
+          </fieldset>
+          <fieldset class="control">
+            <legend>Glass</legend>
+            <div class="chips chips-swatch" data-woption="glass"></div>
+          </fieldset>
+          <fieldset class="control">
+            <legend>Wood</legend>
+            <div class="chips" data-woption="wood"></div>
+          </fieldset>
+
+          <a href="#contact" class="btn" id="window-cta">Request a Quote for This Window</a>
         </div>
       </div>
     </section>
@@ -308,6 +424,7 @@
                 <option>Entry door</option>
                 <option>French / gallery doors</option>
                 <option>Windows</option>
+                <option>Specialty / round windows</option>
                 <option>Whole-home package</option>
                 <option>Something else</option>
               </select>
@@ -346,6 +463,7 @@
       <div>
         <h4>Explore</h4>
         <a href="#collections">Collections</a>
+        <a href="#specialty">Specialty Windows</a>
         <a href="#woods">Our Woods</a>
         <a href="#sinker-cypress">Sinker Cypress</a>
         <a href="#process">Process</a>
