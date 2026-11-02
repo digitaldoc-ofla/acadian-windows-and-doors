@@ -24,6 +24,34 @@ Open `index.html` in any browser. No build step and no server needed.
 All door and window artwork is drawn in code (`script.js`), so every illustration
 updates to any wood, shape or hardware combination.
 
+## Location pages (local SEO)
+
+`service-areas/` has a hub page plus one page for each region served:
+New Orleans, Baton Rouge, Lafayette, Lake Charles, the Northshore (Covington &
+Mandeville), Shreveport–Bossier, Houma & Thibodaux, and St. Francisville.
+
+Each page has its own content, not a template with the city name swapped in:
+local house styles, climate advice, a recommended wood, neighborhoods and
+nearby towns, local FAQs, and links to related areas. Each page also has a
+unique title and meta description, `Service` and `BreadcrumbList` schema, and
+a contact form tagged with the area. The homepage links to every area, and
+`sitemap.xml` and `robots.txt` are generated alongside the pages.
+
+**To edit or add an area**, change `scripts/locations.mjs`, then run:
+
+    node scripts/build-locations.mjs
+
+This rebuilds every location page, the hub, the sitemap, and the service-area
+blocks on the homepage and in the footer.
+
+**Before launch:**
+- Set `SITE_URL` in `scripts/locations.mjs` to the real domain and rebuild.
+  It's used for canonical URLs, the sitemap and the schema.
+- Confirm which areas the business actually serves.
+- Add the phone, address and Google Business Profile link to the schema
+  `provider` (marked TODO in the build script).
+- Fill each page's "project gallery" with real local projects and reviews.
+
 ## Screenshots for review
 
 `concept-screens/` has a page-by-page PNG of every section, plus

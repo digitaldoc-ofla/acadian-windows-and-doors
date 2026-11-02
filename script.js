@@ -645,6 +645,9 @@ document.querySelectorAll("[data-window]").forEach((el) => {
 document.querySelectorAll("[data-special]").forEach((el) => {
   el.innerHTML = specialSVG(JSON.parse(el.dataset.special));
 });
+document.querySelectorAll("[data-swatch]").forEach((el) => {
+  el.innerHTML = swatchSVG(el.dataset.swatch);
+});
 
 /* ---------- Statement window designer ---------- */
 const wstate = { shape: "circle", pattern: "wheel", glass: "clear", wood: "sinker-cypress" };
@@ -701,12 +704,12 @@ if (windowCta) {
 const state = { wood: "sinker-cypress", top: "arch", layout: "double", glass: "divided", hardware: "brass", lite: "upper" };
 
 const woodChips = document.querySelector('.chips[data-option="wood"]');
-woodChips.innerHTML = Object.entries(WOODS)
+if (woodChips) woodChips.innerHTML = Object.entries(WOODS)
   .map(([k, w]) => `<button data-value="${k}"><i style="--sw:${w.base}"></i>${w.name}</button>`)
   .join("");
 
 const woodGrid = document.getElementById("wood-grid");
-woodGrid.innerHTML = Object.entries(WOODS)
+if (woodGrid) woodGrid.innerHTML = Object.entries(WOODS)
   .map(
     ([k, w]) => `
     <button class="wood-card" data-wood="${k}" aria-label="Preview ${w.name}">
@@ -722,11 +725,12 @@ woodGrid.innerHTML = Object.entries(WOODS)
   .join("");
 
 const formWood = document.getElementById("form-wood");
-formWood.innerHTML =
+if (formWood) formWood.innerHTML =
   Object.values(WOODS).map((w) => `<option>${w.name}</option>`).join("") +
   `<option>Not sure yet</option>`;
 
 function render() {
+  if (!document.getElementById("config-door")) return;
   document.getElementById("config-door").innerHTML = doorSVG(state);
   document.querySelectorAll(".chips[data-option]").forEach((group) => {
     const key = group.dataset.option;
@@ -752,7 +756,7 @@ document.querySelectorAll(".chips[data-option]").forEach((group) => {
   });
 });
 
-woodGrid.addEventListener("click", (e) => {
+woodGrid?.addEventListener("click", (e) => {
   const card = e.target.closest(".wood-card");
   if (!card) return;
   state.wood = card.dataset.wood;
@@ -768,7 +772,7 @@ document.querySelectorAll("[data-pick-wood]").forEach((a) =>
 );
 
 // Carry the chosen design into the consultation form
-document.getElementById("design-cta").addEventListener("click", () => {
+document.getElementById("design-cta")?.addEventListener("click", () => {
   formWood.value = WOODS[state.wood].name;
   document.getElementById("form-message").value =
     `I'd like a quote on this design: ${WOODS[state.wood].name}, ${LABELS.top[state.top]}, ` +
@@ -792,19 +796,19 @@ nav.addEventListener("click", (e) => {
 });
 
 /* ---------- Form (mockup only) ---------- */
-document.getElementById("contact-form").addEventListener("submit", (e) => {
+document.getElementById("contact-form")?.addEventListener("submit", (e) => {
   e.preventDefault();
   document.getElementById("form-note").hidden = false;
 });
 
 /* ---------- Concept badge ---------- */
-document.querySelector("#concept-badge button").addEventListener("click", () => {
+document.querySelector("#concept-badge button")?.addEventListener("click", () => {
   document.getElementById("concept-badge").remove();
 });
 
 /* ---------- Reveal on scroll ---------- */
 const revealEls = document.querySelectorAll(
-  ".section-head, .collection-card, .special-card, .wood-card, .process-grid li, .feature-copy, .feature-art, .statement-text, .value"
+  ".section-head, .collection-card, .special-card, .area-card, .style-card, .wood-card, .process-grid li, .feature-copy, .feature-art, .statement-text, .value"
 );
 if ("IntersectionObserver" in window) {
   revealEls.forEach((el) => el.classList.add("reveal"));

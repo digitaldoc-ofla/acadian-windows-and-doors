@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.example.com/index.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/index.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/new-orleans.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/baton-rouge.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/lafayette.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/lake-charles.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/northshore.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/shreveport-bossier.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/houma-thibodaux.html</loc></url>
+  <url><loc>https://www.example.com/service-areas/st-francisville.html</loc></url>
+</urlset>
